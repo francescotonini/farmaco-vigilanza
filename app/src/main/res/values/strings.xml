@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">Farmaco Vigilanza</string>
     <string name="activity_login_title">Login</string>
+    <string name="main_doctor_activity_manage_patients">Gestisci pazienti</string>
+    <string name="main_doctor_activity_manage_factors">Gestisci fattori di rischio</string>
+    <string name="main_doctor_activity_manage_reports">Gestisci segnalazioni</string>
+    <string name="activity_main_doctor_title">Pagina iniziale dottore</string>
+    <string name="activity_add_edit_reports_title">Aggiungi o modifica report</string>
+    <string name="activity_add_edit_patients_title">Aggiungi o rimuovi pazienti</string>
+    <string name="activity_add_edit_factors_title">Aggiungi o modifica fattori di rischio</string>
+    <string name="main_dcotor_activity_menu_logout">Logout</string>
+    <string name="main_doctor_activity_menu_reports_cronology">Cronologia segnalazioni</string>
+    <string name="activity_reports_chronology">Cronologia segnalazioni</string>d
 </resources>
