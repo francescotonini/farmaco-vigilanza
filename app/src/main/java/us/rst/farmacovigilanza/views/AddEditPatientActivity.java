@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -126,55 +127,103 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.activity_add_edit_patient_button_add_risk_factor:
+                binding.activityAddEditPatientButtonAddRiskFactor.setVisibility(View.GONE);
                 binding.activityAddEditPatientNewRiskFactorLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.activity_add_edit_patient_button_add_therapies:
+                binding.activityAddEditPatientButtonAddTherapies.setVisibility(View.GONE);
                 binding.activityAddEditPatientNewTherapyLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.activity_add_edit_patient_button_save:
                 String fiscalCode = binding.activityAddEditPatientEditTextCf.getText().toString();
-                String birthDate = binding.activityAddEditPatientEditTextBirthday.getText().toString();
                 String job = binding.activityAddEditPatientEditTextJob.getText().toString();
                 String province = binding.activityAddEditPatientEditTextProvince.getText().toString();
-                if(fiscalCode.isEmpty() || birthDate.isEmpty() || job.isEmpty() || province.isEmpty()) {
+                String birthdDateString = binding.activityAddEditPatientEditTextBirthday.getText().toString();
+                if(fiscalCode.isEmpty() || birthdDateString.isEmpty() || job.isEmpty() || province.isEmpty()) {
                     SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
                     return;
                 }
                 if(fiscalCode.length() != 16) {
                     SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_cf_less));
+                    return;
                 }
-                currentPatient.setFiscalCode(FiscalCode.parse(binding.activityAddEditPatientEditTextCf.getText().toString()));
-                currentPatient.setBirthDate(Integer.parseInt(binding.activityAddEditPatientEditTextBirthday.getText().toString()));
-                currentPatient.setJob(binding.activityAddEditPatientEditTextJob.getText().toString());
-                currentPatient.setProvince(binding.activityAddEditPatientEditTextProvince.getText().toString());
+                int birthDate = 0;
+                try {
+                    birthDate = Integer.parseInt(birthdDateString);
+                } catch (NumberFormatException e) {
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_birthdate_error));
+                    return;
+                }
+                currentPatient.setFiscalCode(FiscalCode.parse(fiscalCode));
+                currentPatient.setBirthDate(birthDate);
+                currentPatient.setJob(job);
+                currentPatient.setProvince(province);
                 getViewModel().add(currentPatient);
                 onBackPressed();
                 break;
             case R.id.activity_add_edit_patient_button_save_risk_factor:
                 String factorName = binding.activityAddEditPatientRiskFactorNames.getSelectedItem().toString();
-                int levelOfRisk = Integer.parseInt(binding.activityAddEditPatientRiskFactorLevel.getText().toString());
+                String levelOfRiskString = binding.activityAddEditPatientRiskFactorLevel.getText().toString();
+                if(factorName.isEmpty() || levelOfRiskString.isEmpty()) {
+                    SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
+                    return;
+                }
+                int levelOfRisk = 0;
+                try {
+                    levelOfRisk = Integer.parseInt(levelOfRiskString);
+                } catch (NumberFormatException e) {
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_risck_level_error));
+                    return;
+                }
+                if(levelOfRisk < 1 || levelOfRisk > 5) {
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_risck_level_error));
+                    return;
+                }
+
                 getViewModel().addFactor(factorName, levelOfRisk);
 
                 binding.activityAddEditPatientRiskFactorLevel.setText("");
+                binding.activityAddEditPatientButtonAddRiskFactor.setVisibility(View.VISIBLE);
                 binding.activityAddEditPatientNewRiskFactorLayout.setVisibility(View.GONE);
                 KeyboardHelper.hideKeyboard(this);
                 break;
             case R.id.activity_add_edit_patient_button_save_therapy:
-                String medicine = binding.activityAddEditPatientTherapyMedicine.getText().toString();
-                int unit = Integer.parseInt(binding.activityAddEditPatientTherapyUnit.getText().toString());
-                int frequency = Integer.parseInt(binding.activityAddEditPatientTherapyFrequency.getText().toString());
                 DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALIAN);
+                String medicine = binding.activityAddEditPatientTherapyMedicine.getText().toString();
+                String unitString = binding.activityAddEditPatientTherapyUnit.getText().toString();
+                String frequencyString = binding.activityAddEditPatientTherapyFrequency.getText().toString();
+                String startDateString = binding.activityAddEditPatientTherapyStartDate.getText().toString();
+                String endDateString = binding.activityAddEditPatientTherapyEndDate.getText().toString();
+
+                if(medicine.isEmpty() || unitString.isEmpty() || frequencyString.isEmpty() || startDateString.isEmpty() || endDateString.isEmpty()) {
+                    SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
+                    return;
+                }
+                int unit = 0;
+                int frequency = 0;
+                try {
+                    unit = Integer.parseInt(unitString);
+                    frequency = Integer.parseInt(frequencyString);
+                } catch (NumberFormatException e) {
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_unit_frequency_error));
+                    return;
+                }
+                Date startDate;
+                Date endDate;
+                try {
+                    startDate = format.parse(startDateString);
+                    endDate = format.parse(endDateString);
+                } catch (ParseException e) {
+                    SnackBarHelper.showShort(v, getString(R.string.error_date));
+                    return;
+                }
 
                 TherapyEntity entity = new TherapyEntity();
                 entity.setMedicine(medicine);
                 entity.setFrequency(frequency);
                 entity.setUnit(unit);
-                try {
-                    entity.setStartDate(format.parse(binding.activityAddEditPatientTherapyStartDate.getText().toString()));
-                    entity.setEndDate(format.parse(binding.activityAddEditPatientTherapyEndDate.getText().toString()));
-                } catch (ParseException e) {
-                    // TODO: mostrare errore
-                }
+                entity.setStartDate(startDate);
+                entity.setEndDate(endDate);
 
                 getViewModel().addTherapy(entity);
                 binding.activityAddEditPatientTherapyFrequency.setText("");
@@ -183,6 +232,7 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
                 binding.activityAddEditPatientTherapyStartDate.setText("");
                 binding.activityAddEditPatientTherapyEndDate.setText("");
                 KeyboardHelper.hideKeyboard(this);
+                binding.activityAddEditPatientButtonAddTherapies.setVisibility(View.VISIBLE);
                 binding.activityAddEditPatientNewTherapyLayout.setVisibility(View.GONE);
                 break;
         }

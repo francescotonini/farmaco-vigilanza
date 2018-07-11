@@ -6,6 +6,7 @@
     <string name="error_generic">Ops! Riprova</string>
     <string name="error_wrong_credentials">L\'id o la password non sono corretti</string>
     <string name="waiting">Attendere prego</string>
+    <string name="error_date">Le date devono essere nella forma dd/MM/yyyy</string>
 
     <!-- Login activity -->
     <string name="activity_login_title">Login</string>
@@ -52,6 +53,9 @@
     <string name="activity_add_edit_patient_item_risk_factors_button_remove">Rimuovi</string>
     <string name="activity_add_edit_patient_item_therapies_button_remove">Rimuovi</string>
     <string name="activity_add_edit_patient_snackbar_cf_less">Il codice fiscale deve essere lungo 16 caratteri</string>
+    <string name="activity_add_edit_patient_snackbar_birthdate_error">L\'anno di nascita deve essere composto solo da numeri!</string>
+    <string name="activity_add_edit_patient_snackbar_risck_level_error">Il livello di rischio deve essere compreso tra 1 e 5!</string>
+    <string name="activity_add_edit_patient_snackbar_unit_frequency_error">La frequenza e la quantità devono essere composti da soli numeri!</string>
 
     <!-- Add reports -->
     <string name="activity_add_reports_text_view_patient_data">Dati paziente</string>
