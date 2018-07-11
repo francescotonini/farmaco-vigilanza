@@ -49,8 +49,9 @@
     <string name="activity_add_edit_patient_therapy_unit">Quantità al giorno</string>
     <string name="activity_add_edit_patient_therapy_start_date">Data inizio</string>
     <string name="activity_add_edit_patient_therapy_end_date">Data fine</string>
-    <string name="item_risk_factors_button_remove">Rimuovi</string>
-    <string name="item_therapies_button_remove">Rimuovi</string>
+    <string name="activity_add_edit_patient_item_risk_factors_button_remove">Rimuovi</string>
+    <string name="activity_add_edit_patient_item_therapies_button_remove">Rimuovi</string>
+    <string name="activity_add_edit_patient_snackbar_cf_less">Il codice fiscale deve essere lungo 16 caratteri</string>
 
     <!-- Add reports -->
     <string name="activity_add_reports_text_view_patient_data">Dati paziente</string>

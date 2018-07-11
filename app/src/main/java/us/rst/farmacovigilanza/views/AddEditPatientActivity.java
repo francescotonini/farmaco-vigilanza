@@ -24,6 +24,7 @@ import us.rst.farmacovigilanza.database.entity.PatientEntity;
 import us.rst.farmacovigilanza.database.entity.TherapyEntity;
 import us.rst.farmacovigilanza.databinding.ActivityAddEditPatientBinding;
 import us.rst.farmacovigilanza.helpers.KeyboardHelper;
+import us.rst.farmacovigilanza.helpers.SnackBarHelper;
 import us.rst.farmacovigilanza.models.FiscalCode;
 import us.rst.farmacovigilanza.viewmodels.PatientViewModel;
 
@@ -131,6 +132,17 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
                 binding.activityAddEditPatientNewTherapyLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.activity_add_edit_patient_button_save:
+                String fiscalCode = binding.activityAddEditPatientEditTextCf.getText().toString();
+                String birthDate = binding.activityAddEditPatientEditTextBirthday.getText().toString();
+                String job = binding.activityAddEditPatientEditTextJob.getText().toString();
+                String province = binding.activityAddEditPatientEditTextProvince.getText().toString();
+                if(fiscalCode.isEmpty() || birthDate.isEmpty() || job.isEmpty() || province.isEmpty()) {
+                    SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
+                    return;
+                }
+                if(fiscalCode.length() != 16) {
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_edit_patient_snackbar_cf_less));
+                }
                 currentPatient.setFiscalCode(FiscalCode.parse(binding.activityAddEditPatientEditTextCf.getText().toString()));
                 currentPatient.setBirthDate(Integer.parseInt(binding.activityAddEditPatientEditTextBirthday.getText().toString()));
                 currentPatient.setJob(binding.activityAddEditPatientEditTextJob.getText().toString());

@@ -22,7 +22,7 @@
             app:theme="@style/contained_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/item_risk_factors_button_remove"
+            android:text="@string/activity_add_edit_patient_item_risk_factors_button_remove"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true" />
     </RelativeLayout>

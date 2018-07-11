@@ -102,17 +102,17 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
             @Override public void afterTextChanged(Editable s) { }
 
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() < 16) {
-                    binding.activityAddReportsNoPatientLayout.setVisibility(View.GONE);
-                    binding.activityAddReportsPatientLayout.setVisibility(View.GONE);
+                if (s.length() == 16) {
+                    Logger.v(AddReportsActivity.class.getSimpleName(), "CF is " + s);
+                    getViewModel().findPatient(s.toString());
+                    getViewModel().findFactors(s.toString());
+                    getViewModel().findTherapies(s.toString());
 
                     return;
                 }
 
-                Logger.v(AddReportsActivity.class.getSimpleName(), "CF is " + s);
-                getViewModel().findPatient(s.toString());
-                getViewModel().findFactors(s.toString());
-                getViewModel().findTherapies(s.toString());
+                binding.activityAddReportsNoPatientLayout.setVisibility(View.GONE);
+                binding.activityAddReportsPatientLayout.setVisibility(View.GONE);
             }
         });
 

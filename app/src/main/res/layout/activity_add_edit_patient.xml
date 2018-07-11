@@ -48,7 +48,8 @@
                                 android:id="@+id/activity_add_edit_patient_edit_text_cf"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="text"
+                                android:inputType="textCapCharacters"
+                                android:maxLength="16"
                                 android:hint="@string/activity_add_edit_patient_edit_text_cf"/>
                         </android.support.design.widget.TextInputLayout>
 
