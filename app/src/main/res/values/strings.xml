@@ -7,6 +7,7 @@
     <string name="error_wrong_credentials">L\'id o la password non sono corretti</string>
     <string name="waiting">Attendere prego</string>
     <string name="error_date">Le date devono essere nella forma dd/MM/yyyy</string>
+    <string name="toast_to_exit">Press once again to exit!</string>
 
     <!-- Login activity -->
     <string name="activity_login_title">Login</string>

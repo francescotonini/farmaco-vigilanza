@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,7 @@ import us.rst.farmacovigilanza.database.entity.PatientFactorEntity;
 import us.rst.farmacovigilanza.database.entity.TherapyEntity;
 import us.rst.farmacovigilanza.databinding.ActivityAddReportsBinding;
 import us.rst.farmacovigilanza.helpers.KeyboardHelper;
+import us.rst.farmacovigilanza.helpers.SnackBarHelper;
 import us.rst.farmacovigilanza.viewmodels.ReportViewModel;
 
 /**
@@ -38,6 +40,7 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
     private ActivityAddReportsBinding binding;
     private ReportViewModel viewModel;
     private PatientEntity patient;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override protected int getLayoutId() {
         return R.layout.activity_add_reports;
@@ -111,8 +114,7 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                     return;
                 }
 
-                binding.activityAddReportsNoPatientLayout.setVisibility(View.GONE);
-                binding.activityAddReportsPatientLayout.setVisibility(View.GONE);
+                hideAllSection();
             }
         });
 
@@ -170,10 +172,12 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.activity_add_reports_add_patient:
                 KeyboardHelper.hideKeyboard(AddReportsActivity.this);
+                hideAllSection();
                 startActivity(new Intent(this, AddEditPatientActivity.class));
                 break;
             case R.id.activity_add_reports_edit_patient:
                 KeyboardHelper.hideKeyboard(AddReportsActivity.this);
+                hideAllSection();
                 Intent intent = new Intent(this, AddEditPatientActivity.class);
                 intent.putExtra("cf", patient.getFiscalCode().toString());
                 startActivity(intent);
@@ -192,7 +196,7 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                 try {
                     getViewModel().saveReport(patient, adverseReactionName, levelOfGravity, format.parse(adverseReactionDate), therapyId);
                 } catch (ParseException e) {
-                    // TODO: mostrare errore
+                    SnackBarHelper.showShort(v, getString(R.string.error_date));
                 }
 
                 KeyboardHelper.hideKeyboard(this);
@@ -251,5 +255,30 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                 break;
         }
         */
+    }
+
+    public void hideAllSection() {
+        binding.activityAddReportsNoPatientLayout.setVisibility(View.GONE);
+        binding.activityAddReportsPatientLayout.setVisibility(View.GONE);
+        binding.activityAddReportsCardViewAdverseReaction.setVisibility(View.GONE);
+        binding.activityAddReportsNoPatientLayout.setVisibility(View.GONE);
+        binding.activityAddReportsCardViewTherapy.setVisibility(View.GONE);
+        binding.activityAddReportsButtonSave.setVisibility(View.GONE);
+    }
+
+    // Control back press to exit
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            // Close application
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.toast_to_exit), Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2500);
     }
 }
