@@ -70,9 +70,9 @@
                                 style="@style/secondary_text_view" />
                             <android.support.v7.widget.AppCompatButton
                                 android:id="@+id/activity_add_reports_add_patient"
+                                app:theme="@style/contained_button"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:theme="@style/contained_button"
                                 android:text="@string/activity_add_reports_add_patient" />
                         </LinearLayout>
 
@@ -103,6 +103,7 @@
                                 style="@style/secondary_text_view" />
                             <android.support.v7.widget.AppCompatButton
                                 android:id="@+id/activity_add_reports_edit_patient"
+                                app:theme="@style/contained_button"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/activity_add_reports_edit_patient" />
@@ -134,6 +135,7 @@
 
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/activity_add_reports_add_adverse_reaction"
+                            app:theme="@style/contained_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/activity_add_reports_add_adverse_reaction" />
