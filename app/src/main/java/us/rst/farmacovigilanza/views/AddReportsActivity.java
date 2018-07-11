@@ -1,10 +1,12 @@
 package us.rst.farmacovigilanza.views;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -172,6 +174,7 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.activity_add_reports_add_patient:
                 KeyboardHelper.hideKeyboard(AddReportsActivity.this);
+                binding.activityAddReportsInputCf.setText("");
                 hideAllSection();
                 startActivity(new Intent(this, AddEditPatientActivity.class));
                 break;
@@ -189,72 +192,48 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                 String adverseReactionName = binding.activityAddReportsAdverseReactionNames.getSelectedItem().toString();
                 String adverseReactionDate = binding.activityAddReportsAdverseReactionDate.getText().toString();
                 int therapyId = getViewModel().getTherapies(this).getValue().get(binding.activityAddReportsTherapiesNames.getSelectedItemPosition()).getId();
-                int levelOfGravity = Integer.parseInt(binding.activityAddReportsAdverseReactionLevelOfRisk.getText().toString());
+                String levelOfGravityString = binding.activityAddReportsAdverseReactionLevelOfRisk.getText().toString();
+
+                if(adverseReactionDate.isEmpty() || adverseReactionName.isEmpty() || levelOfGravityString.isEmpty()) {
+                    KeyboardHelper.hideKeyboard(this);
+                    SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
+                    return;
+                }
+
+                int levelOfGravity = 0;
+                try {
+                    levelOfGravity = Integer.parseInt(levelOfGravityString);
+                } catch (NumberFormatException e) {
+                    KeyboardHelper.hideKeyboard(this);
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_reports_snackbar_gravity_level_error));
+                    return;
+                }
+                if(levelOfGravity < 1 || levelOfGravity > 6) {
+                    KeyboardHelper.hideKeyboard(this);
+                    SnackBarHelper.showShort(v, getString(R.string.activity_add_reports_snackbar_gravity_level_error));
+                    return;
+                }
 
                 DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ITALIAN);
-
                 try {
                     getViewModel().saveReport(patient, adverseReactionName, levelOfGravity, format.parse(adverseReactionDate), therapyId);
                 } catch (ParseException e) {
+                    KeyboardHelper.hideKeyboard(this);
                     SnackBarHelper.showShort(v, getString(R.string.error_date));
+                    return;
                 }
 
                 KeyboardHelper.hideKeyboard(this);
-                Toast.makeText(this, "Report salvato", Toast.LENGTH_LONG).show();
+                binding.activityAddReportsAdverseReactionDate.setText("");
+                binding.activityAddReportsAdverseReactionLevelOfRisk.setText("");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+                builder.setTitle(getString(R.string.activity_add_reports_report_add_correctly))
+                        .setPositiveButton(getString(R.string.button_ok), (dialog, which) -> {
+                            // do nothing
+                        })
+                        .show();
                 break;
         }
-
-        /*
-        switch (v.getReportId()) {
-            case R.id.activity_manage_reports_btn_add_cf:
-                // Hide keyboard and disable button
-                binding.activityManageReportsBtnAddCf.setEnabled(false);
-                KeyboardHelper.hideKeyboard(AddReportsActivity.this);
-                String cf = binding.activityManageReportsInputCf.getText().toString();
-                if(cf.isEmpty()) {
-                    SnackBarHelper.showShort(v, getResources().getString(R.string.error_empty_field));
-                    binding.activityManageReportsBtnAddCf.setEnabled(false);
-                    return;
-                }
-                viewModel.getPatient(new FiscalCode(cf)).observe(this, patient -> {
-                    if(patient == null) {
-                        return;
-                    }
-
-                    this.patient = patient;
-                    binding.activityManageReportsInputBirthdate.setText(patient.getBirthDate());
-                    binding.activityManageReportsInputProvince.setText(patient.getProvince());
-                    binding.activityManageReportsInputJob.setText(patient.getJob());
-                    binding.activityManageReportsCardViewDataPatientTitle.setVisibility((View.VISIBLE));
-                    binding.activityManageReportsCardViewDataPatient.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsCardViewFactorTitle.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsRecyclerViewFactor.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsCardViewTherapyTitle.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsCardViewTherapyTitle.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsCardViewAdverseReactionTitle.setVisibility(View.VISIBLE);
-                    binding.activityManageReportsCardViewAdverseReaction.setVisibility(View.VISIBLE);
-
-                    // TODO: Setto i valori dei fattori di rischio
-                });
-                break;
-            case R.id.activity_manage_reports_btn_modify_patient:
-                // TODO: Chiamo la classe di aggiunta/modifica paziente
-                break;
-            case  R.id.activity_manage_reports_btn_add_adverse_reaction:
-                // Hide keyboard and disable button
-                binding.activityManageReportsBtnAddCf.setEnabled(false);
-                String name_reaction = binding.activityManageReportsInputAdverseReactionName.getText().toString();
-                String level_reaction = binding.activityManageReportsInputAdverseReactionLevelGravity.getText().toString();
-                String description = binding.activityManageReportsInputAdverseReactionDescription.getText().toString();
-                if(name_reaction.isEmpty() || level_reaction.isEmpty()) {
-                    SnackBarHelper.showShort(v, getResources().getString(R.string.error_empty_field));
-                    binding.activityManageReportsBtnAddCf.setEnabled(false);
-                    return;
-                }
-                // TODO: setReaction();
-                break;
-        }
-        */
     }
 
     public void hideAllSection() {
