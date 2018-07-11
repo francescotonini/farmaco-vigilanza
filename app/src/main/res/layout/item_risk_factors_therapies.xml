@@ -17,13 +17,12 @@
             android:layout_centerVertical="true"
             style="@style/secondary_text_view" />
 
-        <android.support.v7.widget.AppCompatButton
+        <ImageButton
             android:id="@+id/item_risk_factors_button_remove"
-            app:theme="@style/contained_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/activity_add_edit_patient_item_risk_factors_button_remove"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:src="@drawable/delete_icon" />
     </RelativeLayout>
 </layout>
