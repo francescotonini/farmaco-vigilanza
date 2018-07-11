@@ -1,5 +1,6 @@
 package us.rst.farmacovigilanza.views;
 
+import android.app.DialogFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import us.rst.farmacovigilanza.Logger;
 import us.rst.farmacovigilanza.R;
 import us.rst.farmacovigilanza.adapters.FactorsAdapter;
 import us.rst.farmacovigilanza.adapters.TherapiesAdapter;
@@ -24,13 +26,14 @@ import us.rst.farmacovigilanza.database.entity.FactorEntity;
 import us.rst.farmacovigilanza.database.entity.PatientEntity;
 import us.rst.farmacovigilanza.database.entity.TherapyEntity;
 import us.rst.farmacovigilanza.databinding.ActivityAddEditPatientBinding;
+import us.rst.farmacovigilanza.helpers.DatePickerFragment;
 import us.rst.farmacovigilanza.helpers.KeyboardHelper;
 import us.rst.farmacovigilanza.helpers.SnackBarHelper;
 import us.rst.farmacovigilanza.models.FiscalCode;
 import us.rst.farmacovigilanza.viewmodels.PatientViewModel;
 
 public class AddEditPatientActivity extends BaseActivity implements View.OnClickListener,
-        FactorsAdapter.OnDeleteClick, TherapiesAdapter.OnDeleteClick {
+        FactorsAdapter.OnDeleteClick, TherapiesAdapter.OnDeleteClick, DatePickerFragment.InterfaceCommunicator {
 
     @Override protected int getLayoutId() {
         return R.layout.activity_add_edit_patient;
@@ -62,6 +65,8 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
         binding.activityAddEditPatientButtonAddTherapies.setOnClickListener(this);
         binding.activityAddEditPatientButtonSaveRiskFactor.setOnClickListener(this);
         binding.activityAddEditPatientButtonSaveTherapy.setOnClickListener(this);
+        binding.activityAddEditPatientTherapyStartDate.setOnClickListener(this);
+        binding.activityAddEditPatientTherapyEndDate.setOnClickListener(this);
 
         String cfFromReportActivity = getIntent().getStringExtra("cf");
         if (cfFromReportActivity != null) {
@@ -192,8 +197,8 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
                 String medicine = binding.activityAddEditPatientTherapyMedicine.getText().toString();
                 String unitString = binding.activityAddEditPatientTherapyUnit.getText().toString();
                 String frequencyString = binding.activityAddEditPatientTherapyFrequency.getText().toString();
-                String startDateString = binding.activityAddEditPatientTherapyStartDate.getText().toString();
-                String endDateString = binding.activityAddEditPatientTherapyEndDate.getText().toString();
+                startDateString = binding.activityAddEditPatientTherapyStartDate.getText().toString();
+                endDateString = binding.activityAddEditPatientTherapyEndDate.getText().toString();
 
                 if(medicine.isEmpty() || unitString.isEmpty() || frequencyString.isEmpty() || startDateString.isEmpty() || endDateString.isEmpty()) {
                     SnackBarHelper.showShort(v, getString(R.string.error_empty_field));
@@ -235,6 +240,18 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
                 binding.activityAddEditPatientButtonAddTherapies.setVisibility(View.VISIBLE);
                 binding.activityAddEditPatientNewTherapyLayout.setVisibility(View.GONE);
                 break;
+            case R.id.activity_add_edit_patient_therapy_start_date:
+                KeyboardHelper.hideKeyboard(this);
+                android.support.v4.app.DialogFragment startDateFragment = new DatePickerFragment(1);
+                ((DatePickerFragment)startDateFragment).setInterfaceCommunicator(this);
+                startDateFragment.show(getSupportFragmentManager(), "datePicker");
+                break;
+            case R.id.activity_add_edit_patient_therapy_end_date:
+                KeyboardHelper.hideKeyboard(this);
+                android.support.v4.app.DialogFragment endDateFragment = new DatePickerFragment(2);
+                ((DatePickerFragment)endDateFragment).setInterfaceCommunicator(this);
+                endDateFragment.show(getSupportFragmentManager(), "datePicker");
+                break;
         }
     }
 
@@ -256,8 +273,29 @@ public class AddEditPatientActivity extends BaseActivity implements View.OnClick
         }
     }
 
+    // Return data of DataPickerFragment
+    @Override
+    public void onResult(int type, int year, int month, int day) {
+        // type = 1 -> startDate, 2 -> endDate
+        switch (type) {
+            case 1:
+                startDateString = day + "/" + month + "/" + year;
+                binding.activityAddEditPatientTherapyStartDate.setText(startDateString);
+                break;
+            case 2:
+                endDateString =  day + "/" + month + "/" + year;
+                binding.activityAddEditPatientTherapyEndDate.setText(endDateString);
+                break;
+            default:
+                Logger.e(AddEditPatientActivity.class.getSimpleName(), "Error in onResult(): type not found");
+        }
+
+    }
+
     private ActivityAddEditPatientBinding binding;
     private PatientViewModel viewModel;
     private PatientEntity currentPatient;
+    private String startDateString = null;
+    private String endDateString = null;
 }
 

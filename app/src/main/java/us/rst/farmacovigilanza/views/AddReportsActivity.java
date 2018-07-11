@@ -30,6 +30,7 @@ import us.rst.farmacovigilanza.database.entity.PatientEntity;
 import us.rst.farmacovigilanza.database.entity.PatientFactorEntity;
 import us.rst.farmacovigilanza.database.entity.TherapyEntity;
 import us.rst.farmacovigilanza.databinding.ActivityAddReportsBinding;
+import us.rst.farmacovigilanza.helpers.DatePickerFragment;
 import us.rst.farmacovigilanza.helpers.KeyboardHelper;
 import us.rst.farmacovigilanza.helpers.SnackBarHelper;
 import us.rst.farmacovigilanza.viewmodels.ReportViewModel;
@@ -37,12 +38,13 @@ import us.rst.farmacovigilanza.viewmodels.ReportViewModel;
 /**
  * Binds the UI with the code-behind
  */
-public class AddReportsActivity extends BaseActivity implements View.OnClickListener {
+public class AddReportsActivity extends BaseActivity implements View.OnClickListener, DatePickerFragment.InterfaceCommunicator {
 
     private ActivityAddReportsBinding binding;
     private ReportViewModel viewModel;
     private PatientEntity patient;
     private boolean doubleBackToExitPressedOnce = false;
+    private String adverseReactionDate = null;
 
     @Override protected int getLayoutId() {
         return R.layout.activity_add_reports;
@@ -99,7 +101,9 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
         binding.activityAddReportsAddPatient.setOnClickListener(this);
         binding.activityAddReportsEditPatient.setOnClickListener(this);
         binding.activityAddReportsButtonSave.setOnClickListener(this);
+        binding.activityAddReportsButtonSave.setOnClickListener(this);
         binding.activityAddReportsAddAdverseReaction.setOnClickListener(this);
+        binding.activityAddReportsAdverseReactionDate.setOnClickListener(this);
 
         binding.activityAddReportsInputCf.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -180,7 +184,6 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.activity_add_reports_edit_patient:
                 KeyboardHelper.hideKeyboard(AddReportsActivity.this);
-                hideAllSection();
                 Intent intent = new Intent(this, AddEditPatientActivity.class);
                 intent.putExtra("cf", patient.getFiscalCode().toString());
                 startActivity(intent);
@@ -190,7 +193,7 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.activity_add_reports_button_save:
                 String adverseReactionName = binding.activityAddReportsAdverseReactionNames.getSelectedItem().toString();
-                String adverseReactionDate = binding.activityAddReportsAdverseReactionDate.getText().toString();
+                adverseReactionDate = binding.activityAddReportsAdverseReactionDate.getText().toString();
                 int therapyId = getViewModel().getTherapies(this).getValue().get(binding.activityAddReportsTherapiesNames.getSelectedItemPosition()).getId();
                 String levelOfGravityString = binding.activityAddReportsAdverseReactionLevelOfRisk.getText().toString();
 
@@ -233,6 +236,12 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
                         })
                         .show();
                 break;
+            case R.id.activity_add_reports_adverse_reaction_date:
+                KeyboardHelper.hideKeyboard(this);
+                android.support.v4.app.DialogFragment adverseReactionDateFragment = new DatePickerFragment(0);
+                ((DatePickerFragment)adverseReactionDateFragment).setInterfaceCommunicator(this);
+                adverseReactionDateFragment.show(getSupportFragmentManager(), "datePicker");
+                break;
         }
     }
 
@@ -259,5 +268,11 @@ public class AddReportsActivity extends BaseActivity implements View.OnClickList
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, getString(R.string.toast_to_exit), Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2500);
+    }
+
+    @Override
+    public void onResult(int type, int year, int month, int day) {
+        adverseReactionDate = day + "/" + month + "/" + year;
+        binding.activityAddReportsAdverseReactionDate.setText(adverseReactionDate);
     }
 }

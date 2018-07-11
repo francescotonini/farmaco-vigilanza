@@ -158,6 +158,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="text"
+                                android:windowSoftInputMode="stateHidden"
+                                android:focusable="false"
                                 android:hint="@string/activity_add_reports_edit_text_adverse_reaction_date" />
                         </android.support.design.widget.TextInputLayout>
                     </LinearLayout>

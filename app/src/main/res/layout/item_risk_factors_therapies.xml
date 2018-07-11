@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/delete_icon" />
+            android:src="@drawable/delete_icon"
+            style="?android:attr/borderlessButtonStyle" />
     </RelativeLayout>
 </layout>
